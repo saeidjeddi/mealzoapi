@@ -9,7 +9,7 @@ class UserCreationForm(forms.ModelForm):
 
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(
-label="Password confirmation", widget=forms.PasswordInput)
+    label="Password confirmation", widget=forms.PasswordInput)
 
     class Meta:
         model = User
@@ -36,5 +36,5 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ["username", "email", "password", "is_active", "is_admin"]
+        fields = ["username","full_name", "email", "password", "is_active", "is_admin", "is_superuser", "is_developer", "is_management", "is_onboarding", "is_support", "is_marketing"]
 

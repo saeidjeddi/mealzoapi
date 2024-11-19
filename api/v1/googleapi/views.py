@@ -7,7 +7,8 @@ from rest_framework.exceptions import APIException
 from .serializer import RegularHoursSerializer, TimePeriodSerializer
 from datetime import datetime, timedelta
 
-access_token ="ya29.a0AeDClZDYpGdxeWbJnijMAHrfGLWJe2PKykrQh31HbHp5pNYthZ_M9vvKtB5maJJYk1CDMZV7SpAR67E8z3tWdt40zgm8BE4TYmEuW12GWd1zXLu6qiqzfMh7hBLjKO7NHJ1NT3AariseJhfDC6EvHOk9okgyX2y9EAXZHIOpaCgYKAXgSARISFQHGX2MiBrO0aNbEpb14LsjqizMUyQ0175ya29.a0AeDClZDYpGdxeWbJnijMAHrfGLWJe2PKykrQh31HbHp5pNYthZ_M9vvKtB5maJJYk1CDMZV7SpAR67E8z3tWdt40zgm8BE4TYmEuW12GWd1zXLu6qiqzfMh7hBLjKO7NHJ1NT3AariseJhfDC6EvHOk9okgyX2y9EAXZHIOpaCgYKAXgSARISFQHGX2MiBrO0aNbEpb14LsjqizMUyQ0175"
+
+access_token = "ya29.a0AeDClZDYpGdxeWbJnijMAHrfGLWJe2PKykrQh31HbHp5pNYthZ_M9vvKtB5maJJYk1CDMZV7SpAR67E8z3tWdt40zgm8BE4TYmEuW12GWd1zXLu6qiqzfMh7hBLjKO7NHJ1NT3AariseJhfDC6EvHOk9okgyX2y9EAXZHIOpaCgYKAXgSARISFQHGX2MiBrO0aNbEpb14LsjqizMUyQ0175ya29.a0AeDClZDYpGdxeWbJnijMAHrfGLWJe2PKykrQh31HbHp5pNYthZ_M9vvKtB5maJJYk1CDMZV7SpAR67E8z3tWdt40zgm8BE4TYmEuW12GWd1zXLu6qiqzfMh7hBLjKO7NHJ1NT3AariseJhfDC6EvHOk9okgyX2y9EAXZHIOpaCgYKAXgSARISFQHGX2MiBrO0aNbEpb14LsjqizMUyQ0175"
 client_id = "1048682282344-fj3k4m0quarn2bt7eag3m9jdush8ca3j.apps.googleusercontent.com"
 client_secret = "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"
 refresh_token = "1//03zI_ASA3AYjzCgYIARAAGAMSNwF-L9Ir1Ym-c4pv4sOmxlYfMFCjKfp46tIhMhtJtLh27D7yu6UqbTueh7StYaBe5huc6poxYuU"
@@ -33,8 +34,7 @@ def refresh_access_token(refresh_token):
         return new_access_token, expires_in
 
     else:
-        return None
-    
+        return response.status_code, response.text
 
 
 class VerificationsView(APIView):
@@ -68,20 +68,14 @@ class UpdateOpenHoursView(APIView):
     def post(self, request, location_id):
         global access_token, refresh_token
 
-        TOKEN = "GkjshfTOKEN663290345{mdfg%^ksdfgn-sdfkl5632676jnttt"
-        token = request.headers.get("Token")
-
-        if token != TOKEN:
-            return Response({"detail": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
-
-        serializer = RegularHoursSerializer(data=request.data)
+        serializer = RegularHoursSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         hours = serializer.validated_data
 
         url = f"https://mybusinessbusinessinformation.googleapis.com/v1/locations/{location_id}"
         data = {"regularHours": hours}
         params = {"updateMask": "regularHours.periods"}
-        headers = {'Authorization': f'Bearer {access_token}', 'TOKEN': TOKEN}
+        headers = {'Authorization': f'Bearer {access_token}'}
 
         response = requests.patch(url, headers=headers, json=data, params=params)
 
@@ -144,12 +138,14 @@ class GetAccountInfoView(APIView):
 
         response = requests.get(url, headers=headers)
 
+
         if response.status_code == 401:
             access_token, _ = refresh_access_token(refresh_token)
             headers['Authorization'] = f'Bearer {access_token}'
             response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
+            
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
             return Response({"detail": response.text}, status=response.status_code)
@@ -229,7 +225,7 @@ class GetBusinessInfoView(APIView):
 
                 next_page_token = data.get('nextPageToken')
                 if not next_page_token:
-                    break
+                    breaki
                 params['pageToken'] = next_page_token
             else:
                 return Response({"detail": response.text}, status=response.status_code)

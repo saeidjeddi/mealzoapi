@@ -1,23 +1,20 @@
 import requests
-import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.exceptions import APIException
-from datetime import datetime, timedelta
 
 
 
 class ZohoMealView(APIView):
 
     def get(self, request):
-     
+
         page = 0
         field_string = (
             "Account_Name", "Account_Number", "View_in_Mealzo", "Longitude", "Latitude",
             "Rating", "Customer_Data_Base", "GB_Status", "Installation_date", "IOS_App_Link",
             "Android_App_Link", "Landing_Page", "Last_Caller", "Delivery_Bag", "Billing_Code",
-            "Package", "Phone", "APOS", "Booking", "Mealzo_Card_Machine", "TV", "Self_Ordering_Kiosk", 
+            "Package", "Phone", "APOS", "Booking", "Mealzo_Card_Machine", "TV", "Self_Ordering_Kiosk",
             "Social_Responsible", "Website"
         )
 
