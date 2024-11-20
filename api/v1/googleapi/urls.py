@@ -31,5 +31,4 @@ urlpatterns = [
         path('update-websurl/<str:location_id>/', views.UpdateWebView.as_view(), name='UpdateWebsiteUri'),
         path('get-websurl/<str:location_id>/', views.GetWebView.as_view(), name='GetWebsiteUri'),
 
- 
 ]

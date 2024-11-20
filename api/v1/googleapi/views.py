@@ -180,6 +180,8 @@ class UpdatePhoneNumberView(APIView):
         if response.status_code == 200:
             return Response(response.json(), status=status.HTTP_200_OK)
         return Response({"detail": response.text}, status=response.status_code)
+    
+    
 
 
 
