@@ -20,4 +20,16 @@ urlpatterns = [
         path('metric/web-call-count/<str:locations_id>/', views.WebCallCountMetricView.as_view(), name='web-call-count-metric'),
         path('metric/mob-desk-map-count/<str:locations_id>/', views.MobDeskMapCountMetricView.as_view(), name='mob-desk-map-count-metric'),
         path('metric/mob-desk-search-count/<str:locations_id>/', views.MobDeskSearchCountMetricView.as_view(), name='mob-desk-search-count-metric'),
+
+
+        path('update-title/<str:location_id>/', views.UpdateTitleView.as_view(), name='UpdateTitle'),
+        path('get-title/<str:location_id>/', views.GetTitleView.as_view(), name='GetTitle'),
+
+        path('update-phonenumber/<str:location_id>/', views.UpdatePhoneNumberView.as_view(), name='UpdatePhoneNumber'),
+        path('get-phonenumber/<str:location_id>/', views.GetPhoneNumberView.as_view(), name='GetPhonenumber'),
+
+        path('update-websurl/<str:location_id>/', views.UpdateWebView.as_view(), name='UpdateWebsiteUri'),
+        path('get-websurl/<str:location_id>/', views.GetWebView.as_view(), name='GetWebsiteUri'),
+
+ 
 ]

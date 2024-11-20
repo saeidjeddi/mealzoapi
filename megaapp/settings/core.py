@@ -35,7 +35,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'middlewares.logger.middleware_log.UserAccessLogMiddleware',
     # 'middlewares.ip.middleware.RestrictIPMiddleware',
-    'middlewares.url_404.middleware.JsonResponse404Middleware',
+    # 'middlewares.url_404.middleware.JsonResponse404Middleware',
 
 ]
 
@@ -62,21 +62,27 @@ WSGI_APPLICATION = 'megaapp.wsgi.application'
 
 DJANGO_SETTINGS_MODULE="megaapp.settings.dev"
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST'),
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'charset': 'utf8',
+
+#         },
+#     },
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8',
-
-        },
-    },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
-
 
 
 

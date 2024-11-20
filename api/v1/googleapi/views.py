@@ -4,17 +4,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import APIException
-from .serializer import RegularHoursSerializer, TimePeriodSerializer
+from .serializer import RegularHoursSerializer, TimePeriodSerializer, UpdateTitleSerializer, UpdatePhoneNumbers, UpdateWebsiteUriSerializer
 from datetime import datetime, timedelta
 
 
-access_token = "ya29.a0AeDClZDYpGdxeWbJnijMAHrfGLWJe2PKykrQh31HbHp5pNYthZ_M9vvKtB5maJJYk1CDMZV7SpAR67E8z3tWdt40zgm8BE4TYmEuW12GWd1zXLu6qiqzfMh7hBLjKO7NHJ1NT3AariseJhfDC6EvHOk9okgyX2y9EAXZHIOpaCgYKAXgSARISFQHGX2MiBrO0aNbEpb14LsjqizMUyQ0175ya29.a0AeDClZDYpGdxeWbJnijMAHrfGLWJe2PKykrQh31HbHp5pNYthZ_M9vvKtB5maJJYk1CDMZV7SpAR67E8z3tWdt40zgm8BE4TYmEuW12GWd1zXLu6qiqzfMh7hBLjKO7NHJ1NT3AariseJhfDC6EvHOk9okgyX2y9EAXZHIOpaCgYKAXgSARISFQHGX2MiBrO0aNbEpb14LsjqizMUyQ0175"
+access_token =" ya29.a0AeDClZBoSOS-rfF1cd5wUOcWyW4lDT6Zthr_bLGxsCmZjgosafbrv7H88w1Fy52x9_8uQMgYK004PemvnHcRDRF5DEdW3lcZsX5ygwLBV3gd2tqOfZSzck8ldJ1gKkuyC_zVDT36ARKAmprliNwIuCExIgi7dfI0fBIsu0DmaCgYKAcsSARISFQHGX2MirIEWRlLwLdKeVND6SumCRA0175"
 client_id = "1048682282344-fj3k4m0quarn2bt7eag3m9jdush8ca3j.apps.googleusercontent.com"
 client_secret = "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"
-refresh_token = "1//03zI_ASA3AYjzCgYIARAAGAMSNwF-L9Ir1Ym-c4pv4sOmxlYfMFCjKfp46tIhMhtJtLh27D7yu6UqbTueh7StYaBe5huc6poxYuU"
+refresh_token = "1//03gZpsDE8PILzCgYIARAAGAMSNwF-L9IrQjKtUQ1GXCTv2P4W7B7Lzpxzfo3zCZPu-Tqq4781_7mvbBx5kqdWWBU_3qjwRPmRElA"
 refresh_url = "https://oauth2.googleapis.com/token"
-
-
 
 
 def refresh_access_token(refresh_token):
@@ -91,7 +89,187 @@ class UpdateOpenHoursView(APIView):
             return Response(response.json(), status=status.HTTP_200_OK)
 
         return Response({"detail": response.text}, status=response.status_code)
+
+
     
+class UpdateTitleView(APIView):
+    def post(self, request, location_id):
+        global access_token, refresh_token
+
+        serializer = UpdateTitleSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        title = serializer.validated_data.get("title")
+
+        url = f"https://mybusinessbusinessinformation.googleapis.com/v1/locations/{location_id}"
+        data = {"title": title}
+        params = {"updateMask": "title"}
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.patch(url, headers=headers, json=data, params=params)
+
+        print("Initial Response:", response.status_code, response.text)
+
+        if response.status_code == 401:
+            access_token, _ = refresh_access_token(refresh_token)
+            headers['Authorization'] = f'Bearer {access_token}'
+            response = requests.patch(url, headers=headers, json=data, params=params)
+
+            print("Response After Refresh Token:", response.status_code, response.text)
+
+        if response.status_code == 404:
+            return Response({"detail": f"Location ID '{location_id}' not found. Please check the ID."}, status=status.HTTP_404_NOT_FOUND)
+
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+
+        return Response({"detail": response.text}, status=response.status_code)
+
+
+
+
+class GetTitleView(APIView):
+    def get(self, request, location_id):  
+        global access_token, refresh_token
+        
+        
+        url = f'https://mybusinessbusinessinformation.googleapis.com/v1/locations/{location_id}:getGoogleUpdated'
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+        }
+        params = {
+            "readMask": 'title'
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 401:
+            access_token, _ = refresh_access_token(refresh_token)
+            headers['Authorization'] = f'Bearer {access_token}'
+            response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": response.text}, status=response.status_code)
+
+
+
+class UpdatePhoneNumberView(APIView):
+    def post(self, request, location_id):
+        global access_token, refresh_token
+
+        serializer = UpdatePhoneNumbers(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        phone = serializer.validated_data.get("phoneNumbers").get("primaryPhone")
+
+        url = f"https://mybusinessbusinessinformation.googleapis.com/v1/locations/{location_id}"
+        data = {"phoneNumbers": {"primaryPhone": phone}}
+        params = {"updateMask": "phoneNumbers"}
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.patch(url, headers=headers, json=data, params=params)
+
+        if response.status_code == 401:
+            access_token, _ = refresh_access_token(refresh_token)
+            headers['Authorization'] = f'Bearer {access_token}'
+            response = requests.patch(url, headers=headers, json=data, params=params)
+
+        if response.status_code == 404:
+            return Response({"detail": f"Location ID '{location_id}' not found. Please check the ID."}, status=status.HTTP_404_NOT_FOUND)
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        return Response({"detail": response.text}, status=response.status_code)
+
+
+
+class GetPhoneNumberView(APIView):
+    def get(self, request, location_id):  
+        global access_token, refresh_token
+        
+        
+        url = f'https://mybusinessbusinessinformation.googleapis.com/v1/locations/{location_id}:getGoogleUpdated'
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+        }
+        params = {
+            "readMask": 'phoneNumbers'
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 401:
+            access_token, _ = refresh_access_token(refresh_token)
+            headers['Authorization'] = f'Bearer {access_token}'
+            response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": response.text}, status=response.status_code)
+
+
+class UpdateWebView(APIView):
+    def post(self, request, location_id):
+        global access_token, refresh_token
+
+        serializer = UpdateWebsiteUriSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        websiteUri = serializer.validated_data.get("websiteUri")
+
+        url = f"https://mybusinessbusinessinformation.googleapis.com/v1/locations/{location_id}"
+        data = {"websiteUri": websiteUri}
+        params = {"updateMask": "websiteUri"}
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = requests.patch(url, headers=headers, json=data, params=params)
+
+        if response.status_code == 401:
+            access_token, _ = refresh_access_token(refresh_token)
+            headers['Authorization'] = f'Bearer {access_token}'
+            response = requests.patch(url, headers=headers, json=data, params=params)
+
+        if response.status_code == 404:
+            return Response({"detail": f"Location ID '{location_id}' not found. Please check the ID."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+
+        return Response({"detail": response.text}, status=response.status_code)
+
+
+
+class GetWebView(APIView):
+    def get(self, request, location_id):  
+        global access_token, refresh_token
+        
+        
+        url = f'https://mybusinessbusinessinformation.googleapis.com/v1/locations/{location_id}:getGoogleUpdated'
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json',
+        }
+        params = {
+            "readMask": 'websiteUri'
+        }
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 401:
+            access_token, _ = refresh_access_token(refresh_token)
+            headers['Authorization'] = f'Bearer {access_token}'
+            response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": response.text}, status=response.status_code)
+
+
+
+
 
 
 
@@ -691,3 +869,5 @@ class MobDeskSearchCountMetricView(APIView):
 
         else:
             raise APIException(detail=response.text, code=response.status_code)
+
+
