@@ -14,5 +14,6 @@
             "password": "Radbhn13$%",
             "database": "cidbackenddatabase"
         }
-    ]
+    ],
+    "files.autoSave": "afterDelay"
 }

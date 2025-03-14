@@ -5,6 +5,7 @@ from .models import User
 
 
 
+
 class UserCreationForm(forms.ModelForm):
 
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
@@ -28,6 +29,7 @@ class UserCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
 
 
 class UserChangeForm(forms.ModelForm):
@@ -36,5 +38,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ["username","full_name", "email", "password", "is_active", "is_admin", "is_superuser", "is_developer", "is_management", "is_onboarding", "is_support", "is_marketing"]
+        fields = ["username","full_name", "email", "password"]
+
+
 
